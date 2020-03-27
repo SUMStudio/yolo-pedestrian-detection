@@ -111,8 +111,11 @@ def detection_person(image_path: str):
                         0.5, color, 2)
 
     # show the output image
-    cv2.imshow("Image", image)
-    cv2.waitKey(0)
+    #cv2.imshow("Image", image)
+    outpath = image_path[0:image_path.rfind('.')] + "_out" + image_path[image_path.rfind('.'):]
+    #print(outpath)
+    cv2.imwrite(outpath, image)
+    return outpath
 
 
 if __name__ == '__main__':
