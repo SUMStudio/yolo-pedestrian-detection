@@ -93,7 +93,7 @@ def detection_person_img(image, tiny=False):
 
     # apply non-maxima suppression to suppress weak, overlapping bounding
     # boxes
-    idxs = cv2.dnn.NMSBoxes(boxes, confidences, 0.7,
+    idxs = cv2.dnn.NMSBoxes(boxes, confidences, 0.5,
                             0.3)
 
     # ensure at least one detection exists
