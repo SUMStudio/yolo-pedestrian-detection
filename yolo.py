@@ -7,8 +7,7 @@ import time
 import cv2
 import os
 
-
-def detection_person(image_path: str):
+def detection_person_img(image, tiny=False):
     # construct the argument parse and parse the arguments
 
     # load the COCO class labels our YOLO model was trained on
@@ -21,15 +20,17 @@ def detection_person(image_path: str):
                                dtype="uint8")
 
     # derive the paths to the YOLO weights and model configuration
-    weightsPath = os.path.sep.join(['yolo-coco/', "yolov3.weights"])
-    configPath = os.path.sep.join(['yolo-coco/', "yolov3.cfg"])
+    if tiny:
+        weightsPath = os.path.sep.join(['yolo-coco/', "yolov3-tiny.weights"])
+        configPath = os.path.sep.join(['yolo-coco/', "yolov3-tiny.cfg"])
+    else:
+        weightsPath = os.path.sep.join(['yolo-coco/', "yolov3.weights"])
+        configPath = os.path.sep.join(['yolo-coco/', "yolov3.cfg"])
 
     # load our YOLO object detector trained on COCO dataset (80 classes)
     print("[INFO] loading YOLO from disk...")
     net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
 
-    # load our input image and grab its spatial dimensions
-    image = cv2.imread(image_path)
     (H, W) = image.shape[:2]
 
     # determine only the *output* layer names that we need from YOLO
@@ -109,13 +110,24 @@ def detection_person(image_path: str):
             text = "{}: {:.4f}".format(LABELS[classIDs[i]], confidences[i])
             cv2.putText(image, text, (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX,
                         0.5, color, 2)
+    return image
+
+
+def detection_person(image_path: str, return_type="path"):
+
+    # load our input image and grab its spatial dimensions
+    image = cv2.imread(image_path)
+    detection_person_img(image)
 
     # show the output image
     #cv2.imshow("Image", image)
-    outpath = image_path[0:image_path.rfind('.')] + "_out" + image_path[image_path.rfind('.'):]
-    #print(outpath)
-    cv2.imwrite(outpath, image)
-    return outpath
+    if return_type == "path":
+        outpath = image_path[0:image_path.rfind('.')] + "_out" + image_path[image_path.rfind('.'):]
+        #print(outpath)
+        cv2.imwrite(outpath, image)
+        return outpath
+    elif return_type == "img":
+        return image
 
 
 if __name__ == '__main__':
